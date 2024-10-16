@@ -8,6 +8,7 @@ import {
   signInWithPopup,
   GoogleAuthProvider,
 } from "firebase/auth";
+import axios from "axios";
 
 export const doCreateUserWithEmailAndPassword = async (email, password) => {
   return createUserWithEmailAndPassword(auth, email, password);
@@ -22,6 +23,10 @@ export const doSignInWithGoogle = async () => {
   const result = await signInWithPopup(auth, provider);
   const user = result.user;
 
+  await axios.post('http://localhost:3001/signup', {
+    uid: user.uid,
+    email: user.email,
+  });
   // add user to firestore
 };
 
