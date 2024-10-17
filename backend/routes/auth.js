@@ -5,7 +5,6 @@ const cors = require('cors');
 const router = express.Router();
 
 const mongoConfig = require('./mongoConfig.json');
-
 const uri = mongoConfig.uri;
 
 const client = new MongoClient(uri, {
