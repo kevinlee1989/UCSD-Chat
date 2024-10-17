@@ -6,7 +6,6 @@ const router = express.Router();
 
 const mongoConfig = require('./mongoConfig.json');
 
-
 const app = express();
 app.use(cors());
 app.use(bodyParser.json()); // To handle JSON payloads
@@ -43,7 +42,10 @@ app.post('/signup', async (req, res) => {
     try {
         const db = await connectToMongo();
         const collection = db.collection('users'); // Create or use 'users' collection
-        const result = await collection.insertOne({ uid, email }); // Store uid and email
+        const result = await collection.updateOne(
+            { _id: uid },
+            { $setOnInsert: { _id: uid, email: email } },
+            { upsert: true }); // Store uid and email
         res.status(201).send({ message: 'User stored successfully', userId: result.insertedId });
     } catch (error) {
         console.error('Error storing user UID:', error);
