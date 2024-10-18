@@ -41,7 +41,8 @@ router.post('/signup', async (req, res) => {
         const result = await collection.updateOne(
             { _id: uid },
             { $setOnInsert: { _id: uid, email: email } },
-            { upsert: true }); // Store uid and email        res.status(201).send({ message: 'User stored successfully', userId: result.insertedId });
+            { upsert: true }); // Store uid and email
+        res.status(201).send({ message: 'User stored successfully', userId: result.insertedId });
     } catch (error) {
         console.error('Error storing user UID:', error);
         res.status(500).send('Internal server error');
