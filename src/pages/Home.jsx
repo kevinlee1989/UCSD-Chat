@@ -30,13 +30,24 @@ const Home = () => {
   return (
     <div className="container">
       <div className="class-list">
-        <h2>Conversations</h2>
+        <h3>Conversations</h3>
         <ul>
           {classes.map((className, index) => (
             <li
               key={index}
               onClick={() => handleClassSelect(className)}
-              style={{ cursor: "pointer" }}
+              style={{
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                borderRadius: "10px",
+                padding: "10px",
+                transition: "background-color 0.3s",
+                marginTop: "10px",
+                fontSize: "20px",
+                backgroundColor:
+                  selectedClass === className ? "#f0f0f0" : "transparent",
+              }}
             >
               {className}
             </li>

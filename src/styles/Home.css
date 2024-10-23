@@ -5,6 +5,18 @@
     font-family: Arial, sans-serif;
 }
 
+h1 {
+    font-size: 2rem;
+}
+
+h2 {
+    font-size: 1.5rem;
+}
+
+h3 {
+    font-size: 1.25rem;
+}
+
 .container {
     display: flex;
     height: 100vh;
@@ -15,7 +27,7 @@
     color: rgb(0, 0, 0);
     padding: 20px;
     position: relative;
-    border-right: #3c3c3c 1px solid;
+    border-right: #d1d1d1 1px solid;
 }
 
 .class-list h2 {
@@ -28,10 +40,6 @@
 
 .class-list li {
     padding: 10px;
-}
-
-.class-list li:hover {
-    background-color: #6e6e6e;
 }
 
 .class-list li.active {
@@ -70,7 +78,7 @@
 
 .message {
     margin: 5px 0;
-    padding: 8px;
+    padding: 8px 10px;
     border-radius: 5px;
     background-color: #E3F2FD;
     margin-left: auto;
