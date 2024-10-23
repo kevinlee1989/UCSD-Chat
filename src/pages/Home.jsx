@@ -55,7 +55,9 @@ const Home = () => {
         </ul>
       </div>
       <div className="chat-room">
-        <h1>{selectedClass ? `${selectedClass} Chat` : "Select a Class"}</h1>
+        <div>
+          <h1>{selectedClass ? `${selectedClass} Chat` : "Select a Class"}</h1>
+        </div>
         {selectedClass && (
           <div className="chat-box">
             <div className="messages">
