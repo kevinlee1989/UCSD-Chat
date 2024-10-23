@@ -39,7 +39,7 @@ router.get('/', async (req, res) => {
       const results = await collection.find({ course_name: { $regex: regex } }).toArray();
 
       if (results.length === 0) {
-          return res.status(404).send('No matching courses found.');
+          return res.status(204).send('No matching courses found.');
       }
 
       res.status(200).send(results);
