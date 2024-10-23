@@ -4,6 +4,7 @@ const bodyParser = require('body-parser'); // To parse incoming request bodies
 const cors = require('cors');
 const router = express.Router();
 
+
 const mongoConfig = require('./mongoConfig.json');
 
 const uri = mongoConfig.uri;
