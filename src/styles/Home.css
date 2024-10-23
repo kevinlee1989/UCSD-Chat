@@ -20,6 +20,7 @@ h3 {
 .container {
     display: flex;
     height: 100vh;
+    max-width: 100vw;
 }
 
 .class-list {
@@ -52,6 +53,7 @@ h3 {
     background-color: #ffffff;
     display: flex;
     flex-direction: column;
+    width: 100%;
 }
 
 .chat-room h1 {
@@ -67,6 +69,7 @@ h3 {
     display: flex;
     flex-direction: column;
     overflow-y: scroll;
+    width: 100%;
 }
 
 .messages {
