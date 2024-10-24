@@ -136,4 +136,9 @@ router.put('/enroll', async (req, res) => {
     }
 })
 
+
+router.delete('/', async (req, res) => {
+    return res.status(200).send('Need to implement');
+});
+
 module.exports = router;
