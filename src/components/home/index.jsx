@@ -7,6 +7,7 @@ const Home = () => {
 
     const [socketUrl, setSocketUrl] = useState('ws://localhost:3001');
     const [messageHistory, setMessageHistory] = useState([]);
+    const [message, setMessage] = useState('');
     const { sendMessage, lastMessage, readyState } = useWebSocket(socketUrl);
     useEffect(() => {
         if (lastMessage !== null) {
@@ -19,7 +20,7 @@ const Home = () => {
         []
     );
 
-    const handleClickSendMessage = useCallback(() => sendMessage('hi'), []);
+    const handleClickSendMessage = useCallback(() => sendMessage(message), [message]);
 
     const connectionStatus = {
         [ReadyState.CONNECTING]: 'Connecting',
@@ -40,11 +41,19 @@ const Home = () => {
                     Click Me to change Socket Url
                 </button>
                 <br/>
+                <label>
+                    Text input: <input
+                    name="myInput"
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                />
+                </label>
+                <br/>
                 <button
                     onClick={handleClickSendMessage}
                     disabled={readyState !== ReadyState.OPEN}
                 >
-                    Click Me to send 'Hello'
+                    Click Me to send {message}
                 </button>
                 <br/>
                 <span>The WebSocket is currently {connectionStatus}</span>
