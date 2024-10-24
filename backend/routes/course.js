@@ -85,7 +85,6 @@ router.get('/enrolled', async (req, res) => {
             .project({ _id: 1, course_name: 1 })
             .toArray();
 
-        // Check if any courses are found
         if (courses.length === 0) {
             return res.status(204).send('No courses found.');
         }
@@ -96,5 +95,45 @@ router.get('/enrolled', async (req, res) => {
         return res.status(500).send('An error occurred while fetching the enrolled courses.');
     }
 });
+
+
+router.put('/enroll', async (req, res) => {
+    const { uid, courseId } = req.body;
+
+    if (!uid || !courseId) {
+        return res.status(400).send('Both uid and course_id are required.');
+    }
+
+    try {
+        const db = await connectToMongo();
+        const usersCollection = db.collection('users');
+        const coursesCollection = db.collection('course');
+
+        // Update the user's courses array to include the course_id
+        const userUpdateResult = await usersCollection.updateOne(
+            { _id: uid },
+            { $addToSet: { courses: courseId } }
+        );
+
+        // Update the course's users array to include the uid
+        courseObjectId = ObjectId.createFromHexString(courseId);
+        const courseUpdateResult = await coursesCollection.updateOne(
+            { _id: courseObjectId },
+            { $addToSet: { users: uid } }
+        );
+
+        // Check if both updates were successful
+        // TODO might need to handle this differently (diff message for diff case)
+        if (userUpdateResult.modifiedCount === 0 || courseUpdateResult.modifiedCount === 0) {
+            return res.status(404).send('User or course not found, or already enrolled.');
+        }
+
+        return res.status(200).send('User successfully enrolled in the course.');
+        
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send('An error occurred while enrolling a course');
+    }
+})
 
 module.exports = router;
