@@ -1,5 +1,5 @@
 var express = require('express');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 var router = express.Router();
 
 const mongoConfig = require('./mongoConfig.json');
@@ -36,7 +36,10 @@ router.get('/', async (req, res) => {
 
       // Search for courses with names starting with the given string (case-insensitive)
       const regex = new RegExp(`^${course}`, 'i');
-      const results = await collection.find({ course_name: { $regex: regex } }).toArray();
+      const results = await collection
+        .find({ course_name: { $regex: regex } })
+        .project({ _id: 1, course_name: 1 })
+        .toArray();
 
       if (results.length === 0) {
           return res.status(204).send('No matching courses found.');
@@ -47,7 +50,51 @@ router.get('/', async (req, res) => {
       console.error('Error fetching courses:', error);
       res.status(500).send('Internal server error.');
   }
+});
 
+
+router.get('/enrolled', async (req, res) => {
+    const { uid } = req.body;
+
+    if (!uid) {
+        return res.status(400).send('Uid query parameter is required.');
+    }
+
+    try{
+        const db = await connectToMongo();
+        // For getting enrolled courses for a given user
+        const collection = db.collection('users');
+        // For getting course_name
+        const coursesCollection = db.collection('course');
+
+        // Find the user document with the given uid
+        const user = await collection.findOne({ _id: uid });
+
+        // Check if the user exists
+        if (!user) {
+            return res.status(404).send('User not found.');
+        }
+
+        // Extract the courses field from the user document
+        const courseIds = user.courses || [];
+        const objectIds = courseIds.map(id => ObjectId.createFromHexString(id));
+
+        // Find the courses that match the provided IDs
+        const courses = await coursesCollection
+            .find({ _id: { $in: objectIds } })
+            .project({ _id: 1, course_name: 1 })
+            .toArray();
+
+        // Check if any courses are found
+        if (courses.length === 0) {
+            return res.status(204).send('No courses found.');
+        }
+
+        return res.status(200).json(courses);
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send('An error occurred while fetching the enrolled courses.');
+    }
 });
 
 module.exports = router;
