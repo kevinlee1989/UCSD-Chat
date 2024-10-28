@@ -15,7 +15,7 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var authRouter = require('./routes/auth');
 var courseRouter = require('./routes/course');
-var wsEchoRouter = require('./routes/echo');
+var wsRouter = require('./routes/websocket');
 
 
 // view engine setup
@@ -32,7 +32,7 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/auth', authRouter);
 app.use('/course', courseRouter);
-app.use('/echo', wsEchoRouter);
+app.use('/echo', wsRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
