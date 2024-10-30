@@ -138,7 +138,43 @@ router.put('/enroll', async (req, res) => {
 
 
 router.delete('/', async (req, res) => {
-    return res.status(200).send('Need to implement');
+    const { uid, courseId } = req.body;
+
+    if (!uid || !courseId) {
+        return res.status(400).send('Both uid and course_id are required.');
+    }
+
+    try {
+        const db = await connectToMongo();
+        const usersCollection = db.collection('users');
+        const coursesCollection = db.collection('course');
+
+        // Update the user's courses array to exclude the course_id
+        const userUpdateResult = await usersCollection.updateOne(
+            { _id: uid },
+            { $pull: { courses: courseId } }
+        );
+
+        // Update the course's users array to exclude the uid
+        courseObjectId = ObjectId.createFromHexString(courseId);
+        const courseUpdateResult = await coursesCollection.updateOne(
+            { _id: courseObjectId },
+            { $pull: { users: uid } }
+        );
+
+
+        // Check if both updates were successful
+        // TODO might need to handle this differently (diff message for diff case)
+        if (userUpdateResult.modifiedCount === 0 || courseUpdateResult.modifiedCount === 0) {
+            return res.status(404).send('User or course not found, or already dropped.');
+        }
+
+
+        return res.status(200).send('User successfully dropped in the course');
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send('An error occurred while dropping a course');
+    }
 });
 
 module.exports = router;
