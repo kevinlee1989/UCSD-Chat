@@ -1,13 +1,16 @@
 import React from "react";
 import { useState } from "react";
+import {useNavigate} from 'react-router-dom';
 import "../styles/Home.css";
 import { Avatar } from "@mui/material";
+import SearchIcon from '@mui/icons-material/Search';
 
 const Home = () => {
   const classes = ["Class 1", "Class 2", "Class 3"]; // List of classes
   const [selectedClass, setSelectedClass] = useState(null);
   const [messages, setMessages] = useState({});
   const [input, setInput] = useState("");
+  const navigate = useNavigate();
 
   const handleClassSelect = (className) => {
     setSelectedClass(className);
@@ -55,7 +58,13 @@ const Home = () => {
         </ul>
       </div>
       <div className="chat-room">
-        <h1>{selectedClass ? `${selectedClass} Chat` : "Select a Class"}</h1>
+        <div style={{display: "flex", flexDirection: "row"}}>
+            <h1>{selectedClass ? `${selectedClass} Chat` : "Select a Class"}</h1>
+            <SearchIcon onClick={()=> navigate('/search')} 
+                        style={{fontSize: "40px", marginLeft: "850px", marginTop: "5px", cursor: "pointer"}}/>
+            <Avatar onClick={()=> navigate('/profile')} alt="Remy Sharp" src="/static/images/avatar/1.jpg" 
+                    style={{marginLeft: "10px", marginTop: "5px", cursor: "pointer"}}/>
+        </div>
         {selectedClass && (
           <div className="chat-box">
             <div className="messages">
