@@ -3,7 +3,6 @@ const router = express.Router();
 
 //set to store all connections
 let connections = new Set();
-//const { classes } = require('../data/data');
 let classes = {};
 router.ws('/', function (ws, req) {
 
