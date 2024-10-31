@@ -19,7 +19,6 @@ const Home = () => {
     // state to store the message to be sent
     const [message, setMessage] = useState('');
     const [currentClass, setCurrentClass] = useState('class1');
-    const [jsonMessage, setJsonMessage] = useState({});
 
     // useWebSocket hook to connect to the websocket
     const { sendMessage,
