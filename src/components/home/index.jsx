@@ -8,6 +8,8 @@ const Home = () => {
     //get the current user from the auth context
     const { currentUser } = useAuth();
 
+    const classes = ["class1", "class2", "class3"]
+
     // initial socket url
     const [socketUrl, setSocketUrl] = useState('ws://localhost:3001');
 
@@ -16,6 +18,8 @@ const Home = () => {
 
     // state to store the message to be sent
     const [message, setMessage] = useState('');
+    const [currentClass, setCurrentClass] = useState('class1');
+    const [jsonMessage, setJsonMessage] = useState({});
 
     // useWebSocket hook to connect to the websocket
     const { sendMessage,
@@ -25,17 +29,18 @@ const Home = () => {
             readyState,
             getWebSocket, } = useWebSocket(socketUrl, {
         onOpen: () => console.log('websocket opened'),
-        shouldReconnect: (closeEvent) => true,
         queryParams: { //sends the user_id and name as query params
             user_id: currentUser.uid,
-            name: currentUser.displayName
+            name: currentUser.displayName,
+            userClasses: classes
         }
     });
 
     // useEffect to update the message history when a new message is received
     useEffect(() => {
         if (lastMessage !== null) {
-            setMessageHistory((prev) => prev.concat(lastMessage));
+            setMessageHistory((prev) => prev.concat(JSON.parse(lastMessage.data)));
+            console.log(lastMessage);
         }
     }, [lastMessage]);
 
@@ -49,7 +54,23 @@ const Home = () => {
     const handleClickCloseSocket = useCallback(() => getWebSocket().close(), [getWebSocket]);
 
     // function to send the message when the button is clicked
-    const handleClickSendMessage = useCallback(() => sendMessage(message), [message, sendMessage]);
+    //const handleClickSendMessage = useCallback(() => sendMessage(message),
+    // [message, sendMessage]);
+
+    const handleClickSendMessage = useCallback(() =>
+        sendJsonMessage({
+            message: message,
+            course: currentClass
+        }
+        ), [message, sendJsonMessage, currentClass]);
+
+    const handleClickClass1 = useCallback(() => {
+        setCurrentClass('class1')
+    }, []);
+
+    const handleClickClass2 = useCallback(() => {
+        setCurrentClass('class2')
+    }, []);
 
 
     // all the available connection states for the websocket
@@ -87,6 +108,22 @@ const Home = () => {
 
                 <br/>
 
+                <button
+                    onClick={handleClickClass1}
+                    className={"button-test"}
+                >
+                    set to class1
+                </button>
+
+                <button
+                    onClick={handleClickClass2}
+                    className={"button-test"}
+                >
+                    set to class2
+                </button>
+
+                <br/>
+
                 {/*Input field to send the message*/}
                 <label>
                     Text input: <input
@@ -113,9 +150,17 @@ const Home = () => {
                 {/*Display the connection status and green when Open and red when other states*/}
                 <span>The WebSocket is currently {
                     connectionStatus === 'Open' ?
-                        <span className={"text-green-500"}>{connectionStatus}</span> :
-                        <span className={"text-red-500"}>{connectionStatus}</span>
+                        <span
+                            className={"text-green-500"}>{connectionStatus}</span> :
+                        <span
+                            className={"text-red-500"}>{connectionStatus}</span>
                 }
+                </span>
+
+                <br/>
+
+                <span>
+                    The current class is: {currentClass}
                 </span>
 
                 <br/>
@@ -132,9 +177,9 @@ const Home = () => {
                     {messageHistory.map((message, idx) => (
                         <>
                             <span
-                                key={idx}>{message ? message.data : null}
+                                key={idx}>{message && message.course === currentClass ? message.message : null}
+                                <br/>
                             </span>
-                            <br/>
                         </>
                     ))}
                 </ul>
