@@ -177,8 +177,8 @@ const Home = () => {
                     {messageHistory.map((message, idx) => (
                         <>
                             <span
+                                className={"whitespace-pre-line"}
                                 key={idx}>{message && message.course === currentClass ? message.message : null}
-                                <br/>
                             </span>
                         </>
                     ))}
