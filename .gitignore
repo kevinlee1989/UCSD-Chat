@@ -2,3 +2,7 @@ node_modules
 .idea
 .DS_Store
 src/firebase/firebaseConfig.json
+./backend/node_modules
+./backend/.idea
+./backend/.DS_Store
+/backend/routes/mongoConfig.json
