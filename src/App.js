@@ -1,12 +1,15 @@
 import Login from "./components/auth/login";
 import Register from "./components/auth/register";
-
 import Header from "./components/header";
-// import Home from "./components/home";
 import SocketHome from "./components/socket_home";
 
 import { AuthProvider } from "./contexts/authContext";
 import { useRoutes } from "react-router-dom";
+import React from "react";
+import "./index.css";
+import Home from './pages/Home';
+import Profile from './pages/Profile';
+import Search from './pages/Search';
 
 function App() {
   const routesArray = [
@@ -23,15 +26,30 @@ function App() {
       element: <Register />,
     },
     {
-      path: "/home",
+      path: "/socketHome",
       element: <SocketHome />,
     },
+    {
+      path: "/home",
+      element: <Home />,
+    },
+    {
+      path: "/profile",
+      element: <Profile />,
+    },
+    {
+      path: "/search",
+      element: <Search />,
+    },
   ];
+  
   let routesElement = useRoutes(routesArray);
+
   return (
     <AuthProvider>
-      <Header />
-      <div className="w-full h-screen flex flex-col">{routesElement}</div>
+      <div className="w-full h-screen flex flex-col">
+        {routesElement}
+      </div>
     </AuthProvider>
   );
 }
