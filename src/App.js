@@ -26,7 +26,7 @@ function App() {
       element: <Register />,
     },
     {
-      path: "/socketHome",
+      path: "/sockethome",
       element: <SocketHome />,
     },
     {
