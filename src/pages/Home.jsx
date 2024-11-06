@@ -84,7 +84,9 @@ const Home = () => {
           headers: { 'Content-Type': 'application/json' },
           params: { uid: currentUser.uid },
         });
-        setClasses(response.data);
+        if (response.data) {
+          setClasses(response.data);
+        }
       } catch (error) {
         console.error("Error fetching enrolled courses:", error);
       }
