@@ -3,7 +3,7 @@ import { TextField, List, ListItem, Box, Typography } from '@mui/material';
 
 function SearchBar({ data }) {
     const [searchTerm, setSearchTerm] = useState('');
-    const [searchResults, setSearchResults] = useState([]);
+    const [searchResults, setSearchResults] = useState([{'_id': 1, 'course_name': 'class1'}, {'_id':2, 'course_name': 'class2'}]);
 
     const handleChange = (event) => {
         const inputValue = event.target.value;
@@ -42,7 +42,8 @@ function SearchBar({ data }) {
             {/* List of search results */}
             <List>
                 {searchResults.map((item) => (
-                    <ListItem key={item.id}>{item.name}</ListItem>
+                    <ListItem key={item._id}>{item.course_name}</ListItem>
+                    // <ListItem>{item}</ListItem>
                 ))}
             </List>
         </Box>
