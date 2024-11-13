@@ -98,7 +98,7 @@ router.get('/enrolled', async (req, res) => {
 
 
 router.put('/enroll', async (req, res) => {
-    const { uid, courseId } = req.body;
+    const { uid, courseId } = req.query;
 
     if (!uid || !courseId) {
         return res.status(400).send('Both uid and course_id are required.');
@@ -138,7 +138,7 @@ router.put('/enroll', async (req, res) => {
 
 
 router.delete('/', async (req, res) => {
-    const { uid, courseId } = req.body;
+    const { uid, courseId } = req.query;
 
     if (!uid || !courseId) {
         return res.status(400).send('Both uid and course_id are required.');
