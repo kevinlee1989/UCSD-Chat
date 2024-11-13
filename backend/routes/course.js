@@ -54,7 +54,7 @@ router.get('/', async (req, res) => {
 
 
 router.get('/enrolled', async (req, res) => {
-    const { uid } = req.body;
+    const { uid } = req.query;
 
     if (!uid) {
         return res.status(400).send('Uid query parameter is required.');
