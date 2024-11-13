@@ -1,9 +1,35 @@
 const express = require('express');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const router = express.Router();
+
+const mongoConfig = require('./mongoConfig.json');
+const uri = mongoConfig.uri;
+
+// 몽고 연결 펑션
+const client = new MongoClient(uri, {
+    serverApi: {
+        version: ServerApiVersion.v1,
+        strict: true,
+        deprecationErrors: true,
+    }
+});
+
+async function connectToMongo() {
+    try {
+        await client.connect();
+        console.log("Connected to MongoDB!");
+        return client.db("Fall24LikeLion");
+    } catch (err) {
+        console.error('Failed to connect to MongoDB', err);
+    }
+}
+
+
 
 //set to store all connections
 let connections = new Set();
 let classes = {};
+//express와 websoket을 결합한 express-ws 라이브러리
 router.ws('/', function (ws, req) {
 
     //on error, log the error
@@ -35,10 +61,41 @@ router.ws('/', function (ws, req) {
     });
 
     //on message, log the message and send it back to the all the active connections
-    ws.on('message', function (msg) {
+    // 추가해준거는 className을 받아서 몽고디비에있는 그 클레스 네임에 메시지를 저장하는 로직
+    // 'message' 부분이 클라이언트나 서버로부터 메세지를 도착했을때 발생하게하는 websocket event. 
+    // ws.on 특정 이벤트가 실행될때 (여기서는 message 이벤트)  펑션 실행.
+    ws.on('message', async function (msg) {
         //ws.send(msg + ' received from ' + name);
         let parseMsg = JSON.parse(msg)
-        console.log('received: %s from %s', parseMsg.message, ws.name);
+        console.log(parseMsg);
+        let currentDate = new Date();
+        console.log('received: %s from %s at %s', parseMsg.message, parseMsg.course , currentDate);
+        let className = parseMsg.course;
+        console.log(className);
+         try{
+                const db = await connectToMongo();
+                const coursesCollection = db.collection('course');
+
+                const courseUpdateResult = await coursesCollection.updateOne(
+                    { course_name: className }, // Assuming you identify courses by 'courseName'
+                    {
+                        $addToSet: {
+                            chatroom: {
+                                sent_at: currentDate,
+                                sent_msg: parseMsg.message,
+                                sent_uid: ws.user_id
+                            }
+                        }
+                    }
+                );
+                console.log('Message stored in MongoDB:', courseUpdateResult);
+            }
+            catch (error) {
+                console.error("Error Storing Messeage", error);
+            }
+
+
+
         broadcastToClass(ws.name + " sent to " + parseMsg.course +
             ": " + parseMsg.message + "\n", parseMsg.course);
 
