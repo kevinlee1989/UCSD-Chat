@@ -3,12 +3,20 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var cors = require("cors");
+var app = express();
+var expressWs = require('express-ws')(app);
+
+
+
+app.use(cors());
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-var connectRouter = require('./routes/connect.cjs');
+var authRouter = require('./routes/auth');
+var courseRouter = require('./routes/course');
+var wsRouter = require('./routes/websocket');
 
-var app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -22,7 +30,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/connect', connectRouter); // Add the route to the app
+app.use('/auth', authRouter);
+app.use('/course', courseRouter);
+app.use('/echo', wsRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -38,6 +48,12 @@ app.use(function(err, req, res, next) {
   // render the error page
   res.status(err.status || 500);
   res.render('error');
+});
+
+
+const port = process.env.PORT || 3001;
+app.listen(port, () => {
+  console.log(`Backend running on port ${port}`);
 });
 
 module.exports = app;
