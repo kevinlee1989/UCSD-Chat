@@ -24,7 +24,7 @@ async function connectToMongo() {
 }
 
 router.get('/', async (req, res) => {
-  const { course } = req.body; 
+  const { course } = req.query;
 
   if (!course) {
       return res.status(400).send('Course query parameter is required.');
