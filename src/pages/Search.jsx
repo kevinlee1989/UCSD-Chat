@@ -1,19 +1,54 @@
-import React from "react";
-import { useState } from "react";
-import {useNavigate} from 'react-router-dom';
-import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
-import { useAuth } from '../contexts/authContext';
+import React, { useState } from 'react';
+import { TextField, List, ListItem, Box, Typography } from '@mui/material';
 
 const Search = () => {
-    const { currentUser } = useAuth();
-    const navigate = useNavigate();
+    const [searchTerm, setSearchTerm] = useState('');
+    const [searchResults, setSearchResults] = useState([{'_id': 1, 'course_name': 'class1'}, {'_id':2, 'course_name': 'class2'}]);
+    const [data, setData] = useState('');
+
+    const handleChange = (event) => {
+        const inputValue = event.target.value;
+        setSearchTerm(inputValue);
+
+        const results = data.filter((item) =>
+            item.name.toLowerCase().includes(inputValue.toLowerCase())
+        );
+        setSearchResults(results);
+    };
 
     return (
-        <div style={{display: "flex"}}>
-            <KeyboardBackspaceIcon onClick={()=> navigate('/')}
-                                    style={{fontSize: "50px", cursor: "pointer"}}/>
-        </div>
+        <Box
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+            justifyContent="center"
+            minHeight="100vh"
+        >
+            {/* Label above the search bar */}
+            <Typography variant="h6" gutterBottom>
+                Enter your UCSD Class Name!
+            </Typography>
+
+            {/* Centered search input */}
+            <TextField
+                label="Search"
+                variant="outlined"
+                fullWidth={false}
+                value={searchTerm}
+                onChange={handleChange}
+                placeholder="Type to search..."
+                style={{ width: '500px' }}
+            />
+
+            {/* List of search results */}
+            <List>
+                {searchResults.map((item) => (
+                    <ListItem key={item._id}>{item.course_name}</ListItem>
+                    // <ListItem>{item}</ListItem>
+                ))}
+            </List>
+        </Box>
     );
-};
+}
 
 export default Search;

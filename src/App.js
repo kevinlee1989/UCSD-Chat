@@ -8,7 +8,7 @@ import { useRoutes } from "react-router-dom";
 import React from "react";
 import "./index.css";
 import Home from './pages/Home';
-import Profile from './pages/Profile';
+import Profile from './pages/Profile.jsx';
 import Search from './pages/Search';
 
 function App() {
