@@ -1,0 +1,83 @@
+body {
+    background-color: #f4f4f4;
+}
+
+.settings-container {
+    width: 90%;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    margin-bottom: 20px;
+}
+
+.name-section, .password-section {
+    margin-bottom: 20px;
+    width: 50%;
+}
+
+.change-profile {
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.name-input, .password-input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.save-button {
+    background-color: #6b6b6b;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.save-button:hover {
+    background-color: #3c3c3c;
+}
+
+.class-list1 {
+    margin-top: 20px;
+    width:100%;
+}
+
+.class-item {
+    display: flex;
+    align-items: center;
+    background: #f9f9f9;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.class-info {
+    flex: 1;
+}
+
+.delete-button {
+    background-color: #6b6b6b;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.delete-button:hover {
+    background-color: #3c3c3c;
+}
