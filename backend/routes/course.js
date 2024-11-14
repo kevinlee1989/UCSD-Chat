@@ -98,7 +98,7 @@ router.get('/enrolled', async (req, res) => {
 
 
 router.put('/enroll', async (req, res) => {
-    const { uid, courseId } = req.query;
+    const { uid, courseId } = req.body.params;
 
     if (!uid || !courseId) {
         return res.status(400).send('Both uid and course_id are required.');
