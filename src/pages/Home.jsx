@@ -24,6 +24,7 @@ const Home = () => {
   const [classes, setClasses] = useState([]); // State for enrolled classes
   const [currentClass, setCurrentClass] = useState(null);
   const [currentClassId, setCurrentClassId] = useState(null);
+    const [chatlog, setChatlog] = useState([])
 
 
   // useWebSocket hook to connect to the websocket
@@ -63,8 +64,6 @@ const Home = () => {
 
   const handleClickCloseSocket = useCallback(() => getWebSocket().close(), [getWebSocket]);
 
-
-
   // all the available connection states for the websocket
   const connectionStatus = {
       [ReadyState.CONNECTING]: 'Connecting',
@@ -92,8 +91,27 @@ const Home = () => {
       }
     };
 
+  const fetchChats = async () => {
+      if (!currentClassId) return;
+
+      try {
+          const response = await axios.get('http://localhost:3001/chatroom/chatlog', {
+              headers: { 'Content-Type': 'application/json' },
+              params: { courseID: currentClassId },
+          });
+          if (response.data) {
+              setChatlog(response.data);
+              console.log(response.data);
+          }
+      } catch (error) {
+          console.error("Error fetching chatlog", error);
+      }
+  }
+
+      fetchChats();
+
     fetchEnrolledCourses();
-  }, [currentUser]);
+  }, [currentUser, currentClassId]);
 
   const [messages, setMessages] = useState({});
   const [input, setInput] = useState("");
@@ -107,7 +125,6 @@ const Home = () => {
       setMessages((prev) => ({ ...prev, [course_name]: [] }));
     }
   };
-
 
   const handleSendMessage = (e) => {
     e.preventDefault();
