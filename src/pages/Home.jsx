@@ -120,7 +120,7 @@ const Home = () => {
   const handleClassSelect = (course_name, course_id) => {
     setCurrentClass(course_name);
     setCurrentClassId(course_id);
-    console.log('handle:', currentClassId)
+    console.log('handle:', currentClassId);
     if (!messages[course_name]) {
       setMessages((prev) => ({ ...prev, [course_name]: [] }));
     }
@@ -198,22 +198,25 @@ const Home = () => {
         {currentClass && (
           <div className="chat-box">
             <div className="messages">
-              {messages[currentClass]?.map((msg, index) => (
+              {chatlog?.map((msg, index) => (
                 <div
-                  key={`${currentClass}-${index}-${msg}`}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    marginTop: "10px",
-                  }}
+                  key={`$${index}-${msg.sent_msg}`}
+                  style={msg.sent_uid === currentUser.uid ?
+                          {flexDirection: "row"} :
+                          {flexDirection: "row-reverse"}}
+                  className={"messages-div"}
                 >
-                  <div className="message">
-                    {msg}
+                  <div className="message" style={
+                      msg.sent_uid === currentUser.uid ?
+                          {marginLeft:"auto"} :
+                          {marginRight: "auto"}
+                  }>
+                    {msg.sent_msg}
                   </div>
                   <Avatar
                     alt="Remy Sharp"
                     src="/static/images/avatar/1.jpg"
-                    style={{ marginLeft: "10px" }}
+                    style={{ marginLeft: "10px", marginRight: "10px" }}
                   />
                 </div>
               ))}

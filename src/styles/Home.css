@@ -84,7 +84,6 @@ h3 {
     padding: 8px 10px;
     border-radius: 5px;
     background-color: #E3F2FD;
-    margin-left: auto;
 }
 
 .message-form {
@@ -110,4 +109,10 @@ h3 {
 
 .send-button:hover {
     background-color: #3c3c3c;
+}
+
+.messages-div {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
 }
