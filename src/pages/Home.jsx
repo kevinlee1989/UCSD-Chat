@@ -1,5 +1,5 @@
 import React from "react";
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import {useNavigate} from 'react-router-dom';
 import "../styles/Home.css";
 import { Avatar } from "@mui/material";
@@ -145,8 +145,6 @@ const Home = () => {
       setInput("");
     }
   };
-  
-
 
   // useEffect to update the message history when a new message is received
   useEffect(() => {
@@ -154,6 +152,12 @@ const Home = () => {
           setMessageHistory((prev) => prev.concat(lastMessage));
       }
   }, [lastMessage]);
+
+    const AlwaysScrollToBottom = () => {
+        const elementRef = useRef();
+        useEffect(() => elementRef.current.scrollIntoView());
+        return <div ref={elementRef} />;
+    };
 
   return (
     <div className="container">
@@ -218,6 +222,7 @@ const Home = () => {
                     src="/static/images/avatar/1.jpg"
                     style={{ marginLeft: "10px", marginRight: "10px" }}
                   />
+                    <AlwaysScrollToBottom />
                 </div>
               ))}
             </div>
