@@ -1,24 +1,58 @@
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {useNavigate} from 'react-router-dom';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import { useAuth } from '../contexts/authContext';
 import "../styles/Profile.css";
+import axios from 'axios';
 
 const Profile = () => {
     const { currentUser } = useAuth();
     const navigate = useNavigate();
     const [name, setName] = useState("");
     const [password, setPassword] = useState("");
-    const [classes] = useState([
-        { name: "Class Name 1", description: "Description for class 1." },
-        { name: "Class Name 2", description: "Description for class 2." },
-        { name: "Class Name 3", description: "Description for class 3." },
-    ]);
+    const [classes, setClasses] = useState([]); // State for enrolled classes
 
     const handleSave = () => {
         alert(`Profile Updated!\nName: ${name}\nPassword: ${password}`);
     };
+
+    const dropCourse = async (courseId) => {
+        try {
+            const response = await axios.delete('http://localhost:3001/course', {
+                headers: { 'Content-Type': 'application/json' },
+                params: {uid: currentUser.uid, courseId: courseId}
+            });
+
+            if (response.status === 200) {
+                alert("Course deleted successfully!");
+                setClasses(classes.filter(course => course._id !== courseId)); // Update UI
+            }
+        } catch (error) {
+            console.error("Error deleting a course:", error);
+            alert("An error occurred while deleting the course.");
+        };
+    };
+
+    useEffect(() => {
+        const fetchEnrolledCourses = async () => {
+          if (!currentUser || !currentUser.uid) return; // Wait until currentUser and uid are available
+    
+          try {
+            const response = await axios.get('http://localhost:3001/course/enrolled', {
+              headers: { 'Content-Type': 'application/json' },
+              params: { uid: currentUser.uid },
+            });
+            if (response.data) {
+              setClasses(response.data);
+            }
+          } catch (error) {
+            console.error("Error fetching enrolled courses:", error);
+          }
+        };
+    
+        fetchEnrolledCourses();
+      }, [currentUser]);
     
 
     return (
@@ -54,13 +88,18 @@ const Profile = () => {
             
             <h2>Classes</h2>
             <div className="class-list1">
-                {classes.map((classItem, index) => (
-                    <div key={index} className="class-item">
+                {classes.map((course) => (
+                    <div key={course._id} className="class-item">
                         <div className="class-info">
-                            <h3>{classItem.name}</h3>
-                            <p>{classItem.description}</p>
+                            <h3>{course.course_name}</h3>
+                            <p>NA</p>
                         </div>
-                        <button className="delete-button">Delete</button>
+                        <button
+                            className="delete-button"
+                            onClick={() => dropCourse(course._id)}
+                        >
+                            Delete
+                        </button>
                     </div>
                 ))}
             </div>
