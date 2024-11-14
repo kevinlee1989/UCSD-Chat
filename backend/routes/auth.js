@@ -107,6 +107,33 @@ router.get('/login', async (req, res) => {
 
 })
 
+router.put('/name', async (req, res) => {
+    const { uid, name } = req.body.params; // Expecting `uid` and `name` from the frontend
+
+    if (!uid || !name) {
+        return res.status(400).send('Invalid request: UID and name are required.');
+    }
+
+    try {
+        const db = await connectToMongo();
+        const collection = db.collection('users'); // Use the 'users' collection
+
+        const result = await collection.updateOne(
+            { _id: uid }, // Find the user by UID
+            { $set: { name: name } } // Update the name field
+        );
+
+        if (result.matchedCount === 0) {
+            return res.status(404).send('User not found.');
+        }
+
+        res.status(200).send({ message: 'User name updated successfully.' });
+    } catch (error) {
+        console.error('Error updating user name:', error);
+        res.status(500).send('Internal server error');
+    }
+});
+
 
 
 module.exports = router;

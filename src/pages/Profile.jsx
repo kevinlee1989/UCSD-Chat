@@ -13,8 +13,19 @@ const Profile = () => {
     const [password, setPassword] = useState("");
     const [classes, setClasses] = useState([]); // State for enrolled classes
 
-    const handleSave = () => {
-        alert(`Profile Updated!\nName: ${name}\nPassword: ${password}`);
+    const handleSave = async () => {
+        try {
+            const response = await axios.put('http://localhost:3001/auth/name', {
+                headers: { 'Content-Type': 'application/json' },
+                params: {uid: currentUser.uid, name: name}
+            })
+
+            if (response.status === 200) {
+                alert(`Profile Updated!\nName: ${name}`);
+            }
+        } catch (error) {
+            alert('An error occurred while changing name');
+        }
     };
 
     const dropCourse = async (courseId) => {

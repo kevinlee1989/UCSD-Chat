@@ -65,7 +65,7 @@ const Search = () => {
                 />
                 {/* Centered search input */}
                 <Box width="500px" marginBottom="20px" marginTop="35vh" className={"sticky top-0" +
-                    " z-40 bg-white"}> {/* Box to control width and spacing */}
+                    " z-40"} sx={{ backgroundColor: '#f4f4f4' }}> {/* Box to control width and spacing */}
                     {/* Label above the search bar */}
                     <Typography variant="h6" gutterBottom className={"sticky top-0"}>
                         Enter your UCSD Class Name!
