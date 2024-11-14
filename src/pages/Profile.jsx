@@ -25,8 +25,8 @@ const Profile = () => {
         <div className="settings-container">
             <div style={{display:"flex"}}>
             <KeyboardBackspaceIcon onClick={()=> navigate('/')}
-                                    style={{fontSize: "50px", cursor: "pointer"}}/>
-            <h1>Settings</h1>
+                                    style={{fontSize: "40px", cursor: "pointer"}}/>
+            <h2>Profile</h2>
             </div>
             <div className="change-profile">
             <div className="name-section">
