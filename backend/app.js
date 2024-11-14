@@ -16,6 +16,7 @@ var usersRouter = require('./routes/users');
 var authRouter = require('./routes/auth');
 var courseRouter = require('./routes/course');
 var wsRouter = require('./routes/websocket');
+var chatRouter = require('./routes/chatroom');
 
 
 // view engine setup
@@ -33,6 +34,7 @@ app.use('/users', usersRouter);
 app.use('/auth', authRouter);
 app.use('/course', courseRouter);
 app.use('/echo', wsRouter);
+app.use('/chatroom', chatRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
