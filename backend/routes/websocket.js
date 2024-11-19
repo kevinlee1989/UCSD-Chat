@@ -1,7 +1,6 @@
 const express = require('express');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const router = express.Router();
-
 const mongoConfig = require('./mongoConfig.json');
 const uri = mongoConfig.uri;
 
@@ -23,8 +22,6 @@ async function connectToMongo() {
         console.error('Failed to connect to MongoDB', err);
     }
 }
-
-
 
 //set to store all connections
 let connections = new Set();
@@ -67,34 +64,33 @@ router.ws('/', function (ws, req) {
     ws.on('message', async function (msg) {
         //ws.send(msg + ' received from ' + name);
         let parseMsg = JSON.parse(msg)
-        console.log(parseMsg);
+        // console.log(parseMsg);
         let currentDate = new Date();
-        console.log('received: %s from %s at %s', parseMsg.message, parseMsg.course , currentDate);
-        let className = parseMsg.course;
-        console.log(className);
-         try{
-                const db = await connectToMongo();
-                const coursesCollection = db.collection('course');
+        // console.log('received: %s from %s at %s', parseMsg.message, parseMsg.course , currentDate);
+        let classId = parseMsg.course;
+        // console.log(classId);
+        const classObjectId = ObjectId.createFromHexString(classId);
+        try{
+            const db = await connectToMongo();
+            const coursesCollection = db.collection('course');
 
-                const courseUpdateResult = await coursesCollection.updateOne(
-                    { course_name: className }, // Assuming you identify courses by 'courseName'
-                    {
-                        $addToSet: {
-                            chatroom: {
-                                sent_at: currentDate,
-                                sent_msg: parseMsg.message,
-                                sent_uid: ws.user_id
-                            }
+            const courseUpdateResult = await coursesCollection.updateOne(
+                { _id: classObjectId },
+                {
+                    $addToSet: {
+                        chatroom: {
+                            sent_at: currentDate,
+                            sent_msg: parseMsg.message,
+                            sent_uid: ws.user_id
                         }
                     }
-                );
-                console.log('Message stored in MongoDB:', courseUpdateResult);
-            }
-            catch (error) {
-                console.error("Error Storing Messeage", error);
-            }
-
-
+                }
+            );
+            console.log('Message stored in MongoDB:', courseUpdateResult);
+        }
+        catch (error) {
+            console.error("Error Storing Messeage", error);
+        }
 
         broadcastToClass(ws.name + " sent to " + parseMsg.course +
             ": " + parseMsg.message + "\n", parseMsg.course);
