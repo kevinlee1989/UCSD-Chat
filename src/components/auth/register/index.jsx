@@ -7,6 +7,8 @@ import axios from 'axios'; // For sending user data to backend
 const Register = () => {
     const navigate = useNavigate();
     const [email, setEmail] = useState('');
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [isRegistering, setIsRegistering] = useState(false);
@@ -31,11 +33,13 @@ const Register = () => {
                 // Create user with Firebase
                 const userCredential = await doCreateUserWithEmailAndPassword(email, password);
                 const user = userCredential.user;
+                const name = `${firstName} ${lastName}`;
 
                 // Send UID and email to backend (if required)
                 await axios.post('http://localhost:3001/auth/signup/', {
                     uid: user.uid,
-                    email: user.email
+                    email: user.email,
+                    name: name,
                 });
 
                 // Navigate to home after successful signup
@@ -65,6 +69,28 @@ const Register = () => {
                                 required
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
+                                className="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent border rounded-lg"
+                            />
+                        </div>
+
+                        <div>
+                            <label className="text-sm text-gray-600 font-bold">First Name</label>
+                            <input
+                                type="first-name"
+                                required
+                                value={firstName}
+                                onChange={(e) => setFirstName(e.target.value)}
+                                className="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent border rounded-lg"
+                            />
+                        </div>
+
+                        <div>
+                            <label className="text-sm text-gray-600 font-bold">Last Name</label>
+                            <input
+                                type="last-name"
+                                required
+                                value={lastName}
+                                onChange={(e) => setLastName(e.target.value)}
                                 className="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent border rounded-lg"
                             />
                         </div>
