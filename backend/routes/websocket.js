@@ -1,6 +1,7 @@
 const express = require('express');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const router = express.Router();
+
 const mongoConfig = require('./mongoConfig.json');
 const uri = mongoConfig.uri;
 
@@ -22,6 +23,8 @@ async function connectToMongo() {
         console.error('Failed to connect to MongoDB', err);
     }
 }
+
+
 
 //set to store all connections
 let connections = new Set();
@@ -64,36 +67,37 @@ router.ws('/', function (ws, req) {
     ws.on('message', async function (msg) {
         //ws.send(msg + ' received from ' + name);
         let parseMsg = JSON.parse(msg)
-        // console.log(parseMsg);
+        console.log(parseMsg);
         let currentDate = new Date();
-        // console.log('received: %s from %s at %s', parseMsg.message, parseMsg.course , currentDate);
-        let classId = parseMsg.course;
-        // console.log(classId);
-        const classObjectId = ObjectId.createFromHexString(classId);
-        try{
-            const db = await connectToMongo();
-            const coursesCollection = db.collection('course');
+        console.log('received: %s from %s at %s', parseMsg.message, parseMsg.course , currentDate);
+        let courseID = parseMsg.course;
+        console.log(courseID);
+         try{
+                const db = await connectToMongo();
+                const coursesCollection = db.collection('course');
 
-            const courseUpdateResult = await coursesCollection.updateOne(
-                { _id: classObjectId },
-                {
-                    $addToSet: {
-                        chatroom: {
-                            sent_at: currentDate,
-                            sent_msg: parseMsg.message,
-                            sent_uid: ws.user_id
+                const courseUpdateResult = await coursesCollection.updateOne(
+                    { _id: new ObjectId(courseID) },
+                    {
+                        $addToSet: {
+                            chatroom: {
+                                sent_at: currentDate,
+                                sent_msg: parseMsg.message,
+                                sent_uid: ws.user_id,
+                                sent_name: ws.name
+                            }
                         }
                     }
-                }
-            );
-            console.log('Message stored in MongoDB:', courseUpdateResult);
-        }
-        catch (error) {
-            console.error("Error Storing Messeage", error);
-        }
+                );
+                console.log('Message stored in MongoDB:', courseUpdateResult);
+            }
+            catch (error) {
+                console.error("Error Storing Messeage", error);
+            }
 
-        broadcastToClass(ws.name + " sent to " + parseMsg.course +
-            ": " + parseMsg.message + "\n", parseMsg.course);
+
+
+        broadcastToClass(parseMsg.message, ws.user_id, courseID, ws.name);
 
     });
 
@@ -108,18 +112,19 @@ const broadcast = (msg) => {
     })
 }
 
-const broadcastToClass = (msg, className) => {
-    if (!classes[className]) {
-        console.error(`Class ${className} does not exist`);
+const broadcastToClass = (msg, userID, courseID, userName) => {
+    if (!classes[courseID]) {
+        console.error(`Class ${courseID} does not exist`);
         return;
     }
 
-    classes[className].forEach((ws) => {
+    classes[courseID].forEach((ws) => {
         console.log('sending to user:' + ws.name)
         ws.send(JSON.stringify(
             {
-                message: msg,
-                course: className
+                sent_msg: msg,
+                sent_uid: userID,
+                sent_name: userName
             }
         ));
     })

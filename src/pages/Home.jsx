@@ -10,7 +10,7 @@ import { doSignOut } from '../firebase/auth'
 import useWebSocket, { ReadyState } from 'react-use-websocket';
 import axios from 'axios';
 
-// TODO intial key handle for the list of class is null
+// TODO: Clean up Home Component
 
 const Home = () => {
   const { currentUser } = useAuth();
@@ -45,10 +45,14 @@ const Home = () => {
   // useEffect to update the message history when a new message is received
   useEffect(() => {
       if (lastMessage !== null) {
-          setMessageHistory((prev) => prev.concat(JSON.parse(lastMessage.data)));
-          console.log(lastMessage);
+          const m = JSON.parse(lastMessage.data);
+          if (m.sent_uid !== currentUser.uid) {
+              setChatlog((prev) => prev.concat(m));
+              console.log(m);
+              console.log(currentUser.uid);
+          }
       }
-  }, [lastMessage]);
+  }, [lastMessage, currentUser]);
 
   // function to open the socket connection to the echo route
   const handleClickSetSocketUrl = useCallback(
@@ -134,6 +138,9 @@ const Home = () => {
         ...prevMessages,
         [currentClass]: [...(prevMessages[currentClass] || []), input], // Ensure currentClass array exists
       }));
+
+      setChatlog((prev) => prev.concat(
+          {sent_msg: input, sent_uid: currentUser.uid, sent_name: currentUser.displayName}));
   
       // Send message through WebSocket
       sendJsonMessage({
@@ -145,13 +152,6 @@ const Home = () => {
       setInput("");
     }
   };
-
-  // useEffect to update the message history when a new message is received
-  useEffect(() => {
-      if (lastMessage !== null) {
-          setMessageHistory((prev) => prev.concat(lastMessage));
-      }
-  }, [lastMessage]);
 
     const AlwaysScrollToBottom = () => {
         const elementRef = useRef();
@@ -179,7 +179,7 @@ const Home = () => {
                   padding: "10px",
                   transition: "background-color 0.3s",
                   marginTop: "10px",
-                  fontSize: "20px",
+                  fontSize: "1.1rem",
                   backgroundColor:
                     currentClass === course.course_name ? "#f0f0f0" : "transparent",
                 }}
@@ -191,61 +191,70 @@ const Home = () => {
         )}
       </div>
       <div className="chat-room">
-        <div style={{display: "flex", flexDirection: "row"}}>
+        <div style={{display: "flex", flexDirection: "row", justifyContent: "space-between"}}>
             <h1 style={{ whiteSpace: "nowrap" }}>{currentClass ? `${currentClass} Chat` : "Select a Class"}</h1>
             <SearchIcon onClick={()=> navigate('/search')} 
-                        style={{fontSize: "40px", marginLeft: "800px", marginTop: "5px", cursor: "pointer"}}/>
-            <LogoutIcon onClick={() => { doSignOut().then(() => { navigate('/login') }) }} style={{fontSize: "35px", marginLeft: "10px", marginTop: "8px", cursor: "pointer"}}/>
-            <Avatar onClick={()=> navigate('/profile')} alt="Remy Sharp" src="/static/images/avatar/1.jpg" 
+                        style={{fontSize: "1.75rem", marginLeft: "auto", marginTop: "0.625rem", cursor: "pointer"}}/>
+            <LogoutIcon onClick={() => { doSignOut().then(() => { navigate('/login') }) }} style={{fontSize: "1.75rem", marginLeft: "0.625rem", marginTop: "8px", cursor: "pointer"}}/>
+            <Avatar onClick={()=> navigate('/profile')} alt={currentUser.displayName} src="/static/images/avatar/1.jpg"
                     style={{marginLeft: "10px", marginTop: "5px", cursor: "pointer"}}/>
         </div>
         {currentClass && (
           <div className="chat-box">
             <div className="messages">
               {chatlog?.map((msg, index) => (
-                <div
-                  key={`$${index}-${msg.sent_msg}`}
-                  style={msg.sent_uid === currentUser.uid ?
-                          {flexDirection: "row"} :
-                          {flexDirection: "row-reverse"}}
-                  className={"messages-div"}
-                >
-                  <div className="message" style={
-                      msg.sent_uid === currentUser.uid ?
-                          {marginLeft:"auto"} :
-                          {marginRight: "auto"}
-                  }>
-                    {msg.sent_msg}
+                  <div key={`$${index}-${msg.sent_msg}`}>
+                      <div
+                          style={msg.sent_uid === currentUser.uid ?
+                              {flexDirection: "row"} :
+                              {flexDirection: "row-reverse"}}
+                          className={"messages-div"}
+                      >
+                          <div style={
+                              msg.sent_uid === currentUser.uid ?
+                                  {marginLeft: "auto"} :
+                                  {marginRight: "auto"}
+                          }>
+                              <p className={"text-xs text-gray-600"}>{msg?.sent_name}</p>
+                              <div className="message" style={
+                                  msg.sent_uid === currentUser.uid ?
+                                      {marginLeft: "auto"} :
+                                      {marginRight: "auto"}
+                              } >
+                                  {msg.sent_msg}
+                              </div>
+                          </div>
+
+                          <Avatar
+                              alt={msg.sent_name}
+                              src="/static/images/avatar/1.jpg"
+                              style={{marginLeft: "10px", marginRight: "10px"}}
+                          />
+                          <AlwaysScrollToBottom/>
+                      </div>
                   </div>
-                  <Avatar
-                    alt="Remy Sharp"
-                    src="/static/images/avatar/1.jpg"
-                    style={{ marginLeft: "10px", marginRight: "10px" }}
-                  />
-                    <AlwaysScrollToBottom />
-                </div>
               ))}
             </div>
 
-            <form onSubmit={handleSendMessage} className="message-form">
-              <input
-                type="text"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder="Type your message"
-                style={{
-                  width: "100%",
-                  padding: "10px",
-                  fontSize: "16px",
-                  borderRadius: "5px",
-                  border: "1px solid #ccc",
-                  marginRight: "10px",
-                }}
-              />
-              <button type="submit" className="send-button">
-                Send
-              </button>
-            </form>
+              <form onSubmit={handleSendMessage} className="message-form">
+                  <input
+                      type="text"
+                      value={input}
+                      onChange={(e) => setInput(e.target.value)}
+                      placeholder="Type your message"
+                      style={{
+                          width: "100%",
+                          padding: "10px",
+                          fontSize: "16px",
+                          borderRadius: "5px",
+                          border: "1px solid #ccc",
+                          marginRight: "10px",
+                      }}
+                  />
+                  <button type="submit" className="send-button">
+                      Send
+                  </button>
+              </form>
           </div>
         )}
       </div>
