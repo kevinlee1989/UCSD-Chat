@@ -22,10 +22,14 @@ export const doSignInWithGoogle = async () => {
   const provider = new GoogleAuthProvider();
   const result = await signInWithPopup(auth, provider);
   const user = result.user;
+  const fullName = user.displayName || "";
+
+  console.log(fullName);
 
   await axios.post('http://localhost:3001/auth/signup', {
     uid: user.uid,
     email: user.email,
+    name: fullName,
   });
   // add user to firestore
 };

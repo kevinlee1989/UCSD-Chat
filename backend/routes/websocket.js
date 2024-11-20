@@ -24,8 +24,6 @@ async function connectToMongo() {
     }
 }
 
-
-
 //set to store all connections
 let connections = new Set();
 let classes = {};

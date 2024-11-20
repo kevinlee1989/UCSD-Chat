@@ -28,19 +28,23 @@ async function connectToMongo() {
 
 // Create a route to store the user UID
 router.post('/signup', async (req, res) => {
-    const { uid, email } = req.body; // Assuming `uid` and `email` are sent from frontend
+    console.log(req.body);
+    const { uid, email, name } = req.body;
 
-
-    if (!uid || !email) {
-        return res.status(400).send('Invalid request: UID and email are required.');
-    }
+    if (!uid || !email || !name) {
+        return res.status(400).send('Invalid request: UID, email, first name, and last name are required.');
+    };
 
     try {
         const db = await connectToMongo();
         const collection = db.collection('users'); // Create or use 'users' collection
         const result = await collection.updateOne(
             { _id: uid },
-            { $setOnInsert: { _id: uid, email: email } },
+            { $setOnInsert: {
+                _id: uid,
+                email: email,
+                name: name
+            } },
             { upsert: true }); // Store uid and email
         res.status(201).send({ message: 'User stored successfully', userId: result.insertedId });
     } catch (error) {
