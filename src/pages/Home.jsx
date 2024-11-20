@@ -46,8 +46,8 @@ const Home = () => {
   useEffect(() => {
       if (lastMessage !== null) {
           const m = JSON.parse(lastMessage.data);
-          if (m.sent_uid !== currentUser.uid) {
-              setChatlog((prev) => prev.concat(m));
+          if (m.message.sent_uid !== currentUser.uid && m.course === currentClassId) {
+              setChatlog((prev) => prev.concat(m.message));
               console.log(m);
               console.log(currentUser.uid);
           }

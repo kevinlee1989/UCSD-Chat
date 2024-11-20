@@ -122,10 +122,14 @@ const broadcastToClass = (msg, userID, courseID, userName) => {
         console.log('sending to user:' + ws.name)
         ws.send(JSON.stringify(
             {
+            course: courseID,
+            message: {
                 sent_msg: msg,
                 sent_uid: userID,
                 sent_name: userName
             }
+            }
+
         ));
     })
 }
