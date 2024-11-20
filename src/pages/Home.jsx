@@ -24,8 +24,8 @@ const Home = () => {
   const [classes, setClasses] = useState([]); // State for enrolled classes
   const [currentClass, setCurrentClass] = useState(null);
   const [currentClassId, setCurrentClassId] = useState(null);
-    const [chatlog, setChatlog] = useState([])
-
+  const [chatlog, setChatlog] = useState([])
+  const [enrolledUsers, setEnrolledUsers] = useState([]);
 
   // useWebSocket hook to connect to the websocket
   const { sendMessage,
@@ -116,6 +116,31 @@ const Home = () => {
 
     fetchEnrolledCourses();
   }, [currentUser, currentClassId]);
+
+  useEffect(() => {
+    const fetchEnrolledUsers = async () => {
+      if (!currentClassId) return; // 코스 ID가 없으면 실행하지 않음
+  
+      try {
+        const response = await axios.get(`http://localhost:3001/course/${currentClassId}/users`, {
+          headers: { 'Content-Type': 'application/json' },
+        });
+        
+        if (response.status === 200) {
+          console.log("Fetched users:", response.data);
+          setEnrolledUsers(response.data); // 사용자 목록을 상태에 저장
+        } else if (response.status === 204) {
+          console.log("No users found for this course");
+          setEnrolledUsers([]); // 사용자가 없는 경우 빈 배열 설정
+        }
+  
+      } catch (error) {
+        console.error("Error fetching enrolled users:", error);
+      }
+    };  
+  
+    fetchEnrolledUsers();
+  }, [currentClassId]); // `currentClassId`가 변경될 때마다 실행
 
   const [messages, setMessages] = useState({});
   const [input, setInput] = useState("");
@@ -258,6 +283,21 @@ const Home = () => {
           </div>
         )}
       </div>
+      {currentClass && (
+            <div className="user-list" style={{
+              padding: "10px"
+            }}>
+          <h3>Enrolled Users</h3>
+          <ul>
+            {enrolledUsers.map((user) => (
+              <li key={user.id} style={{ display: "flex", alignItems: "center", marginTop: "10px" }}>
+                <Avatar alt={user.name} src={user.avatarUrl} style={{ marginRight: "10px" }} />
+                {user.name}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 };
