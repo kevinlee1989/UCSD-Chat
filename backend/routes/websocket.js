@@ -70,20 +70,23 @@ router.ws('/', function (ws, req) {
         console.log(parseMsg);
         let currentDate = new Date();
         console.log('received: %s from %s at %s', parseMsg.message, parseMsg.course , currentDate);
-        let className = parseMsg.course;
-        console.log(className);
+        let courseID = parseMsg.course;
+        console.log(courseID);
          try{
                 const db = await connectToMongo();
                 const coursesCollection = db.collection('course');
 
                 const courseUpdateResult = await coursesCollection.updateOne(
-                    { course_name: className }, // Assuming you identify courses by 'courseName'
+                    { _id: new ObjectId(courseID) }, // Assuming you identify
+                    // courses by
+                    // 'courseName'
                     {
                         $addToSet: {
                             chatroom: {
                                 sent_at: currentDate,
                                 sent_msg: parseMsg.message,
-                                sent_uid: ws.user_id
+                                sent_uid: ws.user_id,
+                                sent_name: ws.name
                             }
                         }
                     }
@@ -96,8 +99,7 @@ router.ws('/', function (ws, req) {
 
 
 
-        broadcastToClass(ws.name + " sent to " + parseMsg.course +
-            ": " + parseMsg.message + "\n", parseMsg.course);
+        broadcastToClass(parseMsg.message, ws.user_id, courseID, ws.name);
 
     });
 
@@ -112,18 +114,19 @@ const broadcast = (msg) => {
     })
 }
 
-const broadcastToClass = (msg, className) => {
-    if (!classes[className]) {
-        console.error(`Class ${className} does not exist`);
+const broadcastToClass = (msg, userID, courseID, userName) => {
+    if (!classes[courseID]) {
+        console.error(`Class ${courseID} does not exist`);
         return;
     }
 
-    classes[className].forEach((ws) => {
+    classes[courseID].forEach((ws) => {
         console.log('sending to user:' + ws.name)
         ws.send(JSON.stringify(
             {
-                message: msg,
-                course: className
+                sent_msg: msg,
+                sent_uid: userID,
+                sent_name: userName
             }
         ));
     })
