@@ -77,9 +77,7 @@ router.ws('/', function (ws, req) {
                 const coursesCollection = db.collection('course');
 
                 const courseUpdateResult = await coursesCollection.updateOne(
-                    { _id: new ObjectId(courseID) }, // Assuming you identify
-                    // courses by
-                    // 'courseName'
+                    { _id: new ObjectId(courseID) },
                     {
                         $addToSet: {
                             chatroom: {
