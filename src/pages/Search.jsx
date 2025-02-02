@@ -11,10 +11,12 @@ const Search = () => {
     const [searchResults, setSearchResults] = useState([]);
     const navigate = useNavigate();
     const handleChange = async (event) => {
+
         const inputValue = event.target.value;
         setSearchTerm(inputValue);
 
         if (inputValue.trim() !== '') {
+
             const response = await axios.get('http://localhost:3001/course', {
                 headers: { 'Content-Type': 'application/json' },
                 params: { course: inputValue },
@@ -32,7 +34,7 @@ const Search = () => {
         try {
             // Make a PUT request to enroll the user in the course
             const response = await axios.put(
-                'http://localhost:3001/course/enroll',
+                'http://localhost:3001/course/enroll1',
                 {
                     headers: { 'Content-Type': 'application/json' },
                     params: { uid: currentUser.uid, courseId: courseId },

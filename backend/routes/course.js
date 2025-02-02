@@ -32,7 +32,7 @@ router.get('/', async (req, res) => {
 
   try {
       const db = await connectToMongo();
-      const collection = db.collection('course');
+      const collection = db.collection('courses');
 
       // Search for courses with names starting with the given string (case-insensitive)
       const regex = new RegExp(`^${course}`, 'i');
@@ -61,7 +61,7 @@ router.get('/enrolled', async (req, res) => {
         // For getting enrolled courses for a given user
         const collection = db.collection('users');
         // For getting course_name
-        const coursesCollection = db.collection('course');
+        const coursesCollection = db.collection('courses');
 
         // Find the user document with the given uid
         const user = await collection.findOne({ _id: uid });
@@ -93,7 +93,7 @@ router.get('/enrolled', async (req, res) => {
 });
 
 
-router.put('/enroll', async (req, res) => {
+router.put('/enroll1', async (req, res) => {
     const { uid, courseId } = req.body.params;
 
     if (!uid || !courseId) {
@@ -103,7 +103,7 @@ router.put('/enroll', async (req, res) => {
     try {
         const db = await connectToMongo();
         const usersCollection = db.collection('users');
-        const coursesCollection = db.collection('course');
+        const coursesCollection = db.collection('courses');
 
         // Update the user's courses array to include the course_id
         const userUpdateResult = await usersCollection.updateOne(
@@ -143,7 +143,7 @@ router.delete('/', async (req, res) => {
     try {
         const db = await connectToMongo();
         const usersCollection = db.collection('users');
-        const coursesCollection = db.collection('course');
+        const coursesCollection = db.collection('1');
 
         // Update the user's courses array to exclude the course_id
         const userUpdateResult = await usersCollection.updateOne(
@@ -182,7 +182,7 @@ router.get('/:courseId/users', async (req, res) => {
     try {
         const db = await connectToMongo();
         const coursesCollection = db.collection('course');
-        const usersCollection = db.collection('users');
+        const usersCollection = db.collection('1');
         // courseId 변환 확인
         let courseObjectId;
         try {

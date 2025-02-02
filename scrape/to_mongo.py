@@ -2,7 +2,7 @@ import json
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 
-uri = "mongodb+srv://<db_username>:<db_password>@fall24likelion.wowcy.mongodb.net/Fall24LikeLion?retryWrites=true&w=majority&appName=Fall24LikeLion"
+uri = "mongodb+srv://kjmin99999:1034913aA%40%40@cluster0.3q4hb.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 client = MongoClient(uri, server_api=ServerApi('1'))
 
 try:
@@ -14,7 +14,7 @@ except Exception as e:
 
 # Database and collection
 db = client["Fall24LikeLion"]
-collection = db["course"]
+collection = db["courses"]
 
 # Load JSON data
 json_file = "ucsd_courses.json"  # Path to your JSON file
