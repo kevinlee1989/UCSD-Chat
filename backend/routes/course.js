@@ -143,7 +143,7 @@ router.delete('/', async (req, res) => {
     try {
         const db = await connectToMongo();
         const usersCollection = db.collection('users');
-        const coursesCollection = db.collection('1');
+        const coursesCollection = db.collection('courses');
 
         // Update the user's courses array to exclude the course_id
         const userUpdateResult = await usersCollection.updateOne(
@@ -182,7 +182,7 @@ router.get('/:courseId/users', async (req, res) => {
     try {
         const db = await connectToMongo();
         const coursesCollection = db.collection('course');
-        const usersCollection = db.collection('1');
+        const usersCollection = db.collection('users');
         // courseId 변환 확인
         let courseObjectId;
         try {

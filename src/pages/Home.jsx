@@ -13,21 +13,29 @@ import axios from 'axios';
 // TODO: Clean up Home Component
 
 const Home = () => {
+  // 로그인한 사용자 정보 가져오기
   const { currentUser } = useAuth();
-  // initial socket url
+  // 웹소켓과 연결
   const [socketUrl, setSocketUrl] = useState('ws://localhost:3001');
-  // state to store the message history
+  // 이전에 주고받은 메세지 목록을 저장하기위해
   const [messageHistory, setMessageHistory] = useState([]);
-
-  // state to store the message to be sent
+  // 사용자가 입력중인 메세지를 저장.
   const [message, setMessage] = useState('');
-  const [classes, setClasses] = useState([]); // State for enrolled classes
+  // 사용자가 수강 중인 강의 목록을 저장.
+  const [classes, setClasses] = useState([]); 
+  // 사용자가 현재 선택한 강의
   const [currentClass, setCurrentClass] = useState(null);
+  // 현재 선택한 강의ID
   const [currentClassId, setCurrentClassId] = useState(null);
+  // 현재 선택된 강의의 모든 채팅메세지를 저장하기위함
   const [chatlog, setChatlog] = useState([])
+  // 수강된 사람들의 리스트를 알기위함
   const [enrolledUsers, setEnrolledUsers] = useState([]);
 
-  // useWebSocket hook to connect to the websocket
+  // 웹소켓 서버와 연결 
+  // useWebSocket 서버에 연결하고 사용자의 정보를 쿼리 매개변수로 전송
+  // 웹소켓을 통해 메세지를 전송 혹은 수신 가능
+  // onOpen()으로 연결이 성공했는지 확인
   const { sendMessage,
       sendJsonMessage,
       lastMessage,
@@ -42,24 +50,26 @@ const Home = () => {
         }
   });
 
-  // useEffect to update the message history when a new message is received
+  // 이 useEffect는 웹소켓에서 새로운 메세지를 수신할때마다 chatlog 상태 업데이트
   useEffect(() => {
       if (lastMessage !== null) {
           const m = JSON.parse(lastMessage.data);
+          // 내가 보내지않은 메세지가 아닐때만 추가 와 현재 선택된 강의와 일치하는 메세지만 추가가
           if (m.message.sent_uid !== currentUser.uid && m.course === currentClassId) {
               setChatlog((prev) => prev.concat(m.message));
               console.log(m);
               console.log(currentUser.uid);
           }
       }
+      // lastMessage 나 currentUser가 변경될때마다 실행.
   }, [lastMessage, currentUser]);
 
-  // function to open the socket connection to the echo route
+  // 에코 라우트로 연결해서 새로운 강의 데이터를 수신할수 있게함.
   const handleClickSetSocketUrl = useCallback(
     () => setSocketUrl('ws://localhost:3001/echo'),
     []
   );
-
+  // 이 useEffect 함수는 classes가 변경될때마다 실행
   useEffect(() => {
     if (classes.length > 0) {
       handleClickSetSocketUrl();
@@ -77,33 +87,37 @@ const Home = () => {
       [ReadyState.UNINSTANTIATED]: 'Uninstantiated',
   }[readyState];
 
-  // Fetch enrolled courses on component mount
+  // 사용자가 로그인 했을때 수강중인 강의 목록과 채팅기록을 가져온다.
   useEffect(() => {
     const fetchEnrolledCourses = async () => {
       if (!currentUser || !currentUser.uid) return; // Wait until currentUser and uid are available
 
       try {
+        // 현재 로그인한 사용자 정보를 서버에서 가져옴옴
         const response = await axios.get('http://localhost:3001/course/enrolled', {
           headers: { 'Content-Type': 'application/json' },
           params: { uid: currentUser.uid },
         });
         if (response.data) {
+          // 서버에서 받은 강의목록을 상태 classes 로 저장
           setClasses(response.data);
         }
       } catch (error) {
         console.error("Error fetching enrolled courses:", error);
       }
     };
-
+  // 현재 수강과목의 채팅로그를 가져옴
   const fetchChats = async () => {
       if (!currentClassId) return;
 
       try {
+        // 현재 선택된 강의 
           const response = await axios.get('http://localhost:3001/chatroom/chatlog', {
               headers: { 'Content-Type': 'application/json' },
               params: { courseID: currentClassId },
           });
           if (response.data) {
+              // 해당 id에대한 채팅로그를 setChatlog로 state 저장.
               setChatlog(response.data);
               console.log(response.data);
           }
@@ -115,6 +129,7 @@ const Home = () => {
       fetchChats();
 
     fetchEnrolledCourses();
+    // 현재 로그인한 사용자가 변경 혹은 강의 ID가 변경될때 useEffect 발동.
   }, [currentUser, currentClassId]);
 
   useEffect(() => {
@@ -146,38 +161,48 @@ const Home = () => {
   const [input, setInput] = useState("");
   const navigate = useNavigate();
 
+  // 사용자가 강의를 클릭하면 실행.
   const handleClassSelect = (course_name, course_id) => {
+    // 클래스의 강의명과 ID를 state로 저장.
     setCurrentClass(course_name);
     setCurrentClassId(course_id);
     console.log('handle:', currentClassId);
+    // 해당 수강과목의 메세지가 없으면 초기화.
     if (!messages[course_name]) {
       setMessages((prev) => ({ ...prev, [course_name]: [] }));
     }
   };
 
+  // 사용자가 메세지를 전송할때 실행되는 함수수
   const handleSendMessage = (e) => {
+    // 페이지 새로고침 방지.
     e.preventDefault();
+    // 공백문자만 입력했을경우 와 강의가 선택되지않은경우 전송을 안함.
     if (input.trim() && currentClass) {
-      // Update local messages state
+      // 기존 setMessages state에 업데이트를 함. 
+      // 이전 메세지가 없으면 빈매열 사용 기존배열 있으면 input에 추가.
       setMessages((prevMessages) => ({
         ...prevMessages,
         [currentClass]: [...(prevMessages[currentClass] || []), input], // Ensure currentClass array exists
       }));
 
+      // setChatlog state 업데이트 
+      // 기존 chatlog 상태를 유지(prev) 새메시지를 concat()을 통해 추가.
       setChatlog((prev) => prev.concat(
           {sent_msg: input, sent_uid: currentUser.uid, sent_name: currentUser.displayName}));
   
-      // Send message through WebSocket
+      // 웹소켓을 통해 메세지 전송.
       sendJsonMessage({
         message: input,
         course: currentClassId,
       });
   
-      // Clear the input field
+      // 보낸후에는 입력필드를 "" 비움.
       setInput("");
     }
   };
 
+    // 스크롤을 항상 최하단으로 이동하게 해줌.
     const AlwaysScrollToBottom = () => {
         const elementRef = useRef();
         useEffect(() => elementRef.current.scrollIntoView());

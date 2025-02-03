@@ -1,36 +1,47 @@
+// 이메일/ 비밀번호 로그인 및 Google 계정을 통한 로그인 기능
+// Firebase Authentication을 사용해서 로그인 기능 처리,
+// 사용자의 로그인 상태를 확인하고 로그인 상태이면 /home로 이동동
+
 import React, { useState } from 'react'
 import { Navigate, Link } from 'react-router-dom'
+// Firebase의 이메일/비밀번호 및 Google 로그인 메서드를 사용.
 import { doSignInWithEmailAndPassword, doSignInWithGoogle } from '../../../firebase/auth'
 import { useAuth } from '../../../contexts/authContext'
 
 const Login = () => {
+    // 현재 사용자가 로그인되었는지 확인하는 상태태
     const { userLoggedIn } = useAuth()
-
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [isSigningIn, setIsSigningIn] = useState(false)
     const [errorMessage, setErrorMessage] = useState('')
 
+    // 이메일/비밀번호 로그인 처리.
     const onSubmit = async (e) => {
         e.preventDefault()
+        // 이미 IsSigningIn에 state 가없으면 실행.
         if(!isSigningIn) {
+            // 중복 클릭 방지.
             setIsSigningIn(true)
+            // Firebase로그인 요청.
             await doSignInWithEmailAndPassword(email, password)
-            // doSendEmailVerification()
+            // doSendEmailVerification() // 이메일 인증 로직
         }
     }
 
+    // Google 로그인 버튼 클릭시 발동. 
     const onGoogleSignIn = (e) => {
         e.preventDefault()
         if (!isSigningIn) {
             setIsSigningIn(true)
             doSignInWithGoogle().catch(err => {
-                setIsSigningIn(false)
+                setIsSigningIn(false) //실패시 다시 로그인버튼 활성화.
             })
         }
     }
 
     return (
+        // UserLoggedIn이 true 이면 Navigate 컴포넌트를 사용해서 자동으로 /home으로 이동.
         <div>
             {userLoggedIn && (<Navigate to={'/home'} replace={true} />)}
 

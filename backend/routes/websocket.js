@@ -74,7 +74,7 @@ router.ws('/', function (ws, req) {
         console.log(courseID);
          try{
                 const db = await connectToMongo();
-                const coursesCollection = db.collection('course');
+                const coursesCollection = db.collection('courses');
 
                 const courseUpdateResult = await coursesCollection.updateOne(
                     { _id: new ObjectId(courseID) },

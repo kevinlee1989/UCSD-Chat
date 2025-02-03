@@ -6,15 +6,17 @@ import { useAuth } from '../contexts/authContext';
 import "../styles/Profile.css";
 import axios from 'axios';
 
+// 이 컴포넌트는 사용자의 프로필정보를 관리하는 기능.
 const Profile = () => {
     const { currentUser } = useAuth();
     const navigate = useNavigate();
     const [name, setName] = useState("");
     const [password, setPassword] = useState("");
     const [classes, setClasses] = useState([]); // State for enrolled classes
-
+    // 사용자가 이름을 변경하고 "save" 버튼을 클릭하면 실행됨.
     const handleSave = async () => {
         try {
+            // 프론트엔드에서 setName state를 받아와서 name에 저장하고 그걸 서버로 put 메소드로 보냄.
             const response = await axios.put('http://localhost:3001/auth/name', {
                 headers: { 'Content-Type': 'application/json' },
                 params: {uid: currentUser.uid, name: name}
@@ -28,8 +30,10 @@ const Profile = () => {
         }
     };
 
+    //강의 삭제 버튼.
     const dropCourse = async (courseId) => {
         try {
+            // 수강 ID 서버로 보내고 delete로. 
             const response = await axios.delete('http://localhost:3001/course', {
                 headers: { 'Content-Type': 'application/json' },
                 params: {uid: currentUser.uid, courseId: courseId}
@@ -45,6 +49,7 @@ const Profile = () => {
         };
     };
 
+    // 수강중인 강의 목록 가져오기.
     useEffect(() => {
         const fetchEnrolledCourses = async () => {
           if (!currentUser || !currentUser.uid) return; // Wait until currentUser and uid are available
@@ -63,6 +68,7 @@ const Profile = () => {
         };
     
         fetchEnrolledCourses();
+        // currentUser가 변경되면 이 함수 발동.
       }, [currentUser]);
     
 

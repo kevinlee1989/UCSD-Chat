@@ -32,7 +32,7 @@ router.get('/chatlog', async (req, res) => {
 
     try {
         const db = await connectToMongo();
-        const collection = db.collection('course');
+        const collection = db.collection('courses');
 
         const chatLog = await collection
             .findOne({ _id: new ObjectId(courseID) });
