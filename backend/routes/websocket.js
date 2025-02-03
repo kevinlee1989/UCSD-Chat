@@ -26,24 +26,24 @@ async function connectToMongo() {
 
 
 
-//set to store all connections
+// 웹소켓 연결 및 상태관리.
 let connections = new Set();
 let classes = {};
 //express와 websoket을 결합한 express-ws 라이브러리
 router.ws('/', function (ws, req) {
 
-    //on error, log the error
+    // 에러이벤트 발생시 콘솔에 추가. 
     ws.on('error', console.error);
 
     //log the new connection
     console.log("New connection has opened!");
 
-    //get the user_id and name from the query params
+    //쿼리 파라미터에서 유저 아이디, 이름, 강의리스트 추출하여 웹소켓 객체에 저장.
     ws.user_id = req.query.user_id;
     ws.name = req.query.name;
     ws.userClasses = req.query.userClasses.split(',')
 
-    //add to the active connection set
+    // 새로운 클라이언트 연결을 connections 에 추가.
     connections.add(ws);
 
     ws.userClasses.forEach((className) => {
@@ -67,7 +67,7 @@ router.ws('/', function (ws, req) {
     ws.on('message', async function (msg) {
         //ws.send(msg + ' received from ' + name);
         let parseMsg = JSON.parse(msg)
-        console.log(parseMsg);
+        // console.log(parseMsg);
         let currentDate = new Date();
         console.log('received: %s from %s at %s', parseMsg.message, parseMsg.course , currentDate);
         let courseID = parseMsg.course;
@@ -103,15 +103,7 @@ router.ws('/', function (ws, req) {
 
 });
 
-//broadcast function to send message to all active connections
-const broadcast = (msg) => {
-    //loop through all the active connections
-    connections.forEach((ws)=>{
-        //if the connections are objects with info use something like ws.ws.send()
-        ws.send(msg);
-    })
-}
-
+// 특정강의 courseID에 속한 사용자에게만 메세지를 전송.
 const broadcastToClass = (msg, userID, courseID, userName) => {
     if (!classes[courseID]) {
         console.error(`Class ${courseID} does not exist`);
