@@ -1,6 +1,13 @@
 body {
     background-color: #f4f4f4;
 }
+.settings-wrapper{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f5f5f5;
+}
 
 .settings-container {
     width: 90%;
