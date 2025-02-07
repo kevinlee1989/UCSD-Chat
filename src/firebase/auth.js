@@ -8,6 +8,7 @@ import {
   signInWithPopup,
   GoogleAuthProvider,
 } from "firebase/auth";
+
 import axios from "axios";
 
 export const doCreateUserWithEmailAndPassword = async (email, password) => {
