@@ -32,7 +32,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test --env=node",
+    "test": "jest --config=jest.config.js --passWithNoTests",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {

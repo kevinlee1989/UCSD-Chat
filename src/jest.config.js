@@ -1,7 +1,4 @@
 module.exports = {
-  moduleNameMapper: {
-    "\\.(css|less|sass|scss)$": "identity-obj-proxy"
-  },
   transformIgnorePatterns: [
     "node_modules/(?!(axios)/)" // axios를 Jest가 변환하도록 설정
   ],
